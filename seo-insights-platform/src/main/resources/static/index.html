@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>SEO Insights Platform</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="wrapper">
+
+    <header>
+        <div class="brand">
+            <div class="brand-icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline>
+                    <polyline points="16 7 22 7 22 13"></polyline>
+                </svg>
+            </div>
+            <span>SEO Insights</span>
+        </div>
+        <h1>Audit any website's SEO<br>in under 10 seconds.</h1>
+        <p class="tagline">Scrapes metadata, runs an AI audit, stores your report history.</p>
+    </header>
+
+    <div class="search-box">
+        <div class="search-inner" id="searchInner">
+            <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input type="text" id="urlInput" placeholder="https://yourwebsite.com" autocomplete="off" spellcheck="false" />
+            <button id="analyzeBtn" onclick="startAnalysis()">Analyze</button>
+        </div>
+        <div class="error-msg" id="errorMsg"></div>
+    </div>
+
+    <div class="loader" id="loader">
+        <div class="spinner"></div>
+        <div class="loader-info">
+            <p id="loaderTitle">Analyzing your website...</p>
+            <div class="steps">
+                <div class="step" id="step1">
+                    <span class="dot"></span>
+                    <span>Fetching page with Jsoup</span>
+                </div>
+                <div class="step" id="step2">
+                    <span class="dot"></span>
+                    <span>Sending data to AI Model</span>
+                </div>
+                <div class="step" id="step3">
+                    <span class="dot"></span>
+                    <span>Saving report to database</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="report" id="report">
+
+        <div class="report-header">
+            <a id="reportUrl" href="#" target="_blank" rel="noopener">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                </svg>
+                <span id="reportUrlText"></span>
+            </a>
+            <span id="reportTs"></span>
+        </div>
+
+        <div class="hero-grid">
+            <div class="card score-card">
+                <p class="card-label">SEO Score</p>
+                <div class="ring-wrap">
+                    <svg width="150" height="150" viewBox="0 0 150 150">
+                        <circle cx="75" cy="75" r="60" fill="none" stroke="#1e293b" stroke-width="10"/>
+                        <circle id="scoreArc" cx="75" cy="75" r="60"
+                                fill="none" stroke="#38bdf8" stroke-width="10"
+                                stroke-linecap="round"
+                                stroke-dasharray="376.99"
+                                stroke-dashoffset="376.99"
+                                transform="rotate(-90 75 75)"
+                        />
+                    </svg>
+                    <div class="ring-center">
+                        <span class="ring-num" id="scoreNum">0</span>
+                        <span class="ring-sub">/100</span>
+                    </div>
+                </div>
+                <span class="score-badge" id="scoreBadge">—</span>
+            </div>
+
+            <div class="card summary-card">
+                <p class="card-label">AI Summary</p>
+                <p id="summaryText"></p>
+                <div class="quick-stats">
+                    <div>
+                        <strong id="qsStrengths" class="green">0</strong>
+                        <span>Strengths</span>
+                    </div>
+                    <div>
+                        <strong id="qsWeaknesses" class="red">0</strong>
+                        <span>Issues</span>
+                    </div>
+                    <div>
+                        <strong id="qsRecommendations" class="amber">0</strong>
+                        <span>Fixes</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <p class="section-label">Metadata Breakdown</p>
+        <div class="meta-grid" id="metaGrid"></div>
+
+        <p class="section-label">Detailed Analysis</p>
+        <div class="analysis-grid">
+            <div class="card">
+                <div class="list-header green-header">
+                    <div class="list-icon green-icon">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                    </div>
+                    <span>Strengths</span>
+                    <span class="list-count green-count" id="countStrengths">0</span>
+                </div>
+                <ul id="listStrengths"></ul>
+            </div>
+
+            <div class="card">
+                <div class="list-header red-header">
+                    <div class="list-icon red-icon">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </div>
+                    <span>Weaknesses</span>
+                    <span class="list-count red-count" id="countWeaknesses">0</span>
+                </div>
+                <ul id="listWeaknesses"></ul>
+            </div>
+
+            <div class="card">
+                <div class="list-header amber-header">
+                    <div class="list-icon amber-icon">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                    </div>
+                    <span>Recommendations</span>
+                    <span class="list-count amber-count" id="countRecommendations">0</span>
+                </div>
+                <ul id="listRecommendations"></ul>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="history-section" id="historySection">
+        <p class="section-label">Recent Reports</p>
+        <div class="history-row" id="historyRow"></div>
+    </div>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
