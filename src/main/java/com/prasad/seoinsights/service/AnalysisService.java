@@ -25,10 +25,13 @@ public class AnalysisService {
     private String apiKey;
 
     private static final String API_URL = "https://api.cohere.com/v2/chat";
+    private final ObjectMapper objectMapper;
+    private final HttpClient httpClient;
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
-    private final HttpClient httpClient = HttpClient.newHttpClient();
-
+    public AnalysisService(HttpClient httpClient, ObjectMapper objectMapper) {
+        this.httpClient = httpClient;
+        this.objectMapper = objectMapper;
+    }
     public AnalysisResult analyze(WebMetadata metadata) throws Exception {
         log.info("Calling Cohere Chat API...");
 
